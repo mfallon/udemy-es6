@@ -271,24 +271,338 @@ console.log(lessThanFifteen);
 /*
 	S5 - 13 - Querying For Records with Find
 */
+
+var users = [
+	{ name: "Joe" },
+	{ name: "Paul" },
+	{ name: "Conor" },
+	{ name: "Keith" }
+];
+
+var user1 = users.find(function(user) {
+	// return a truthy value
+	// return first vlue that returns true
+	return user.name === "Conor";
+});
+
+console.log(user1.name);
+
 /*
-	S5 - 
+	S5 - 14 - Find Continued
+*/
+
+function Car(model) {
+	this.model = model;
+}
+
+var cars = [
+	new Car("Buick"),
+	new Car("Camaro"),
+	new Car("Focus")
+];
+
+var car1 = cars.find(function(car) {
+	// etc
+});
+
+// most useful for finding the parent record from a child - i.e. using the post to retrieve all comments for the post
+
+/*
+	S5 - 15 - Using find to search for users
+*/
+// a diagram showing the basic concept of find.
+/*
+	S5 - Ex 1
+*/
+// could be likened to the SQL query: SELECT * FROM users WHERE admin = 'true';
+var users = [
+  { id: 1, admin: false },
+  { id: 2, admin: false },
+  { id: 3, admin: true }
+];
+
+var admin = users.find(function(user){
+    return user.admin === true;
+});
+
+console.log(admin);
+/*
+	S5 - Ex 2
+*/
+var accounts = [
+  { balance: -10 },
+  { balance: 12 },
+  { balance: 0 }
+];
+
+var account = accounts.find(function(account){
+    return account.balance === 12;
+});
+
+console.log(account);
+/*
+	S5 - Ex 3
+	Your goal: Write a 'findWhere' function that achieves this shorthand approach.  'findWhere' should return the found object.
+*/
+var ladders = [
+  { id: 1, height: 20 },
+  { id: 3, height: 25 },
+  { id: 2, height: 65 }
+];
+
+// My implementation seems a little over complicated here but it works.
+// want to be able to provide arbitrary props in
+function findWhere(array, criteria) {
+  return array.find(function(element) {
+      var props = Object.keys(criteria);
+      var found = [];
+      props.forEach(function(prop) {
+        found.push(element[prop] === criteria[prop]);
+      });
+	// need to have passed props otherwise no criteria returns nothin
+      return found.length && found.indexOf(false) === -1;
+  });
+}
+
+var found = findWhere(ladders, { height: 25 });
+console.log(found);
+
+/*
+	S6 - 16 - A little every and alot of some
+	Now dealing with condensing array down to a single value
+*/
+
+// we have a program that can only run when ram is > 16
+var computers = [
+	{ name: "Acer", ram: 24 },
+	{ name: "Apple", ram: 4 },
+	{ name: "Compaq", ram: 32}
+];
+
+// safer to assume that 'some' can't until we find one that does
+var someComputersCanRunProgram = false;
+
+// safer to assume that 'all' can until we encounter one that can't - bit like how I was working with 'found' variable above
+var everyComputersCanRunProgram = true;
+
+// SOME: Results from iterators OR'd together
+var someComputersCanRunProgram = computers.some(function(computer) {
+	// note result is the same for both but the logic is OR
+	return computer.ram > 16;
+});
+
+// EVERY: Results from iterators AND'd together
+var everyComputersCanRunProgram = computers.every(function(computer) {
+	// note result is the same for both but the logic is AND
+	return computer.ram > 16;
+});
+
+console.log("some:", someComputersCanRunProgram, "every:", everyComputersCanRunProgram);
+
+/*
+	S6 - 19 - Every / Some in practice
+*/
+
+// form validation example
+
+var Field = function(field) {
+	this.field = field;
+};
+
+// <returns> Boolean
+Field.prototype.validate = function() {
+	return this.field.length > 0;
+};
+
+var username = new Field("Mark");
+var password = new Field("pass123");
+var dob = new Field("06/02/1973");
+
+var fields = [username, password, dob];
+var validated = [];
+
+// so instead of having to explicitly && every field
+// or in your case doing something like:
+fields.forEach(function(field) {
+   validated.push(field.validate());
+});
+
+// and then doing:
+fieldsAreValid = validated.indexOf(false) === -1;
+console.log("fieldsAreValid: ", fieldsAreValid);
+
+// which is nearly as bad as && all fields
+// we can do
+
+var fieldsAreValid = fields.every(function(field) {
+	return field.validate();
+});
+
+console.log("fieldsAreValid: ", fieldsAreValid);
+
+/*
+	S6 - Ex - 1
+	Given an array of users, return 'true' if every user has submitted a request form.  Assign the result to the variable 'hasSumbmitted'.
+*/
+var users = [
+  { id: 21, hasSubmitted: true },
+  { id: 62, hasSubmitted: false },
+  { id: 4, hasSubmitted: true }
+];
+
+var hasSubmitted = users.every(function(user){
+    return user.hasSubmitted;
+});
+
+console.log("hasSubmitted:", hasSubmitted);
+/*
+	S6 - Ex - 2
+	Given an array of network objects representing network requests, assign the boolean 'true' to the variable 'inProgress' if any network request has a 'status' of 'pending'.
+*/
+var requests = [
+  { url: '/photos', status: 'complete' },
+  { url: '/albums', status: 'pending' },
+  { url: '/users', status: 'failed' }
+];
+
+var inProgress = requests.some(function(request) {
+    return request.status === 'pending';
+});
+
+console.log("inProgress", inProgress);
+
+/*
+	S7 - 20 - Condensing Lists with Reduce
+	Can actually implement all other helpers with reduce?
+	Good use case is addition
+	Note the extra arg, which is the previous carry thru:
+		arr.reduce(callback[, initialValue])
+	See rules around previous, current and initial value
+	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+*/
+
+var numbers = [10, 20, 33];
+
+var sum = numbers.reduce(function(sum, number) {
+	return number + sum;		
+}, 0);
+
+console.log("sum:", sum);
+
+/*
+	S7 - 21 - A touch more on reduce
+*/
+
+var primaryColors = [
+	{ color: 'red' },
+	{ color: 'yellow' },
+	{ color: 'blue' }
+];
+
+// note 2nd arg is to pass in empty array to intialise it, then it is bound to 'prev' or first arg to function
+var mixed = primaryColors.reduce(function(prev, col) {
+	prev.push(col.color);
+	return prev;
+}, []);
+
+console.log("mixed:", mixed);
+
+/*
+	S7 - 22 - Ace your next interview with Reduce
+	Balanced parens problem
+		"(((())))" // balanced
+		"()()()()" // balanced
+		"()))))))" // unbalanced
+	Easy to track a counter:
+		( = +1
+		) = -1
+*/
+
+// inital value is 0
+function balancedParens(string) {
+	return string.split('').reduce(function(prev, char, i) {
+		console.log("prev:",prev,"char:",char,"i:",i);
+		// special logi
+		if(i === 0 && char === ")") {
+			return null;
+		}
+		prev += char === "(" ? 1 : char === ")" ? -1 : 0;
+		return prev;
+	}, 0); 
+}
+
+// this is how he outlined it:
+function balancedParens(string) {
+        return string.split('').reduce(function(prev, char, i) {
+		if (prev < 0) {
+			return prev;
+		}
+		if (char === "(") {
+			return ++prev;
+		}
+		if (char === ")") {
+			return --prev;
+		}
+                return prev;
+        }, 0);
+}
+
+console.log("balanced?", !balancedParens(")("));
+
+/*
+	S7 - 23 - Ex. 1
+	Use the 'reduce' helper to find the sum of all the distances traveled.  Assign the result to the variable 'totalDistance'
+
+*/
+var trips = [{ distance: 34 }, { distance: 12 } , { distance: 1 }];
+
+var totalDistance = trips.reduce(function(prev, element) {
+    return prev += element.distance;
+}, 0);
+
+console.log("totalDistance:", totalDistance);
+/*
+	S7 - 24 - Ex. 2 - Reducing Properties
+	Use the 'reduce' helper to create an object that tallies the number of sitting and standing desks.  The object returned should have the form '{ sitting: 3, standing: 2 }'.  The initial value has been provided to you. Hint: Don't forget to return the accumulator object (the first argument to the iterator function)
+*/
+var desks = [
+  { type: 'sitting' },
+  { type: 'standing' },
+  { type: 'sitting' },
+  { type: 'sitting' },
+  { type: 'standing' }
+];
+
+var deskTypes = desks.reduce(function(tally, desk) {
+	tally[desk.type]++;
+	return tally;
+}, { sitting: 0, standing: 0 });
+
+console.log("tally:", deskTypes);
+
+/*
+	S7 - 25 - Hardmode: Custom 'Unique' Helper
+	Another really hard one!  Write a function called 'unique' that will remove all the duplicate values from an array.
+
 */
 /*
-	S5 - 
+	S7 - 23 -
 */
 /*
-	S5 - 
+	S7 - 23 -
 */
 /*
-	S5 - 
+	S7 - 23 -
 */
 /*
-	S5 - 
+	S7 - 23 -
 */
 /*
-	S5 - 
+	S7 - 23 -
 */
 /*
-	S5 - 
+	S7 - 23 -
+*/
+/*
+	S7 - 23 -
 */
