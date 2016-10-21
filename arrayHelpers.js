@@ -583,26 +583,32 @@ console.log("tally:", deskTypes);
 /*
 	S7 - 25 - Hardmode: Custom 'Unique' Helper
 	Another really hard one!  Write a function called 'unique' that will remove all the duplicate values from an array.
+For example, given the following array:
+var numbers = [1, 1, 2, 3, 4, 4];
+Your function should return
+[1, 2, 3, 4]
+Hint: Use the 'reduce' and 'find' helpers.  
 
 */
-/*
-	S7 - 23 -
-*/
-/*
-	S7 - 23 -
-*/
-/*
-	S7 - 23 -
-*/
-/*
-	S7 - 23 -
-*/
-/*
-	S7 - 23 -
-*/
-/*
-	S7 - 23 -
-*/
-/*
-	S7 - 23 -
-*/
+
+var numbers = [1, 1, 2, 3, 4, 4];
+
+function unique(array) {
+	return array.reduce(function(prev, element, index, original) {
+		// need to create a copy where the current element is removed
+		// so our find function doesn't find itself
+		var copyForward = original.slice(index+1);
+		if(!copyForward.find(function(el) {
+			return el === element;
+		})) {
+			prev.push(element);
+		}
+		return prev;
+	}, []);
+}
+
+unique(numbers);
+
+console.log(unique(numbers));
+
+
