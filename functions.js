@@ -482,7 +482,7 @@ const companies = [
 ];
 
 // want to get the location property of the first element
-const [{ location}] = companies;
+const [{ location }] = companies;
 
 console.log(location);
 
@@ -549,8 +549,8 @@ const pointsXY = points.map(([x, y]) => {
  **/
 
 const profile = {
-      title: 'Engineer',
-        department: 'Engineering'
+    title: 'Engineer',
+    department: 'Engineering'
 };
 
 function isEngineer(profile) {
@@ -609,9 +609,20 @@ const classesAsObject = classes.map(([subject, time, teacher]) => ({subject, tim
  *
  * Hint: Don't forget that with recursion you must add a base case so you don't get an infinite call stack.  For example, if 'const [ number, ...rest ] = numbers' and number is undefined do you need to keep walking through the array?
  **/
-
 const numbers = [1, 2, 3];
 
-function double() {
-        
+function double([ num, ...rest ]) {
+    if(!rest.length) {
+        return [ num * 2 ];
+    }
+    return [ num*2, ...double(rest)];
 }
+
+function double([ num, ...rest ]) {
+      return rest.length ? [ num*2, ...double(rest) ] : [ num * 2 ];
+}
+
+double(numbers);
+
+
+
